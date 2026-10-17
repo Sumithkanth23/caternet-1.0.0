@@ -1,6 +1,8 @@
 // Job post CRUD for caterers
 
 const JobPost = require("../models/JobPost");
+const JobRequest = require("../models/JobRequest");
+const CatererProfile = require("../models/CatererProfile");
 
 /**
  * POST /api/jobs
@@ -19,6 +21,9 @@ async function createJob(req, res, next) {
       salaryPeriod,
       minExperience,
       skills,
+      workHoursFrom,
+      workHoursTo,
+      supervisorName,
     } = req.body;
 
     if (!catererId || !title || !jobType || !startDate) {
@@ -38,6 +43,9 @@ async function createJob(req, res, next) {
       salaryAmount: salaryAmount ? Number(salaryAmount) : undefined,
       salaryPeriod,
       minExperience,
+      workHoursFrom,
+      workHoursTo,
+      supervisorName,
       skills: Array.isArray(skills)
         ? skills
         : typeof skills === "string"
@@ -86,30 +94,58 @@ async function getJobById(req, res, next) {
 async function updateJob(req, res, next) {
   try {
     const { id } = req.params;
-    const update = { ...req.body };
-
-    if (update.startDate) update.startDate = new Date(update.startDate);
-    if (update.endDate) update.endDate = new Date(update.endDate);
-    if (update.salaryAmount) update.salaryAmount = Number(update.salaryAmount);
-    if (update.skills) {
-      update.skills = Array.isArray(update.skills)
-        ? update.skills
-        : update.skills
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean);
-    }
-
-    const job = await JobPost.findByIdAndUpdate(id, update, {
-      new: true,
-      runValidators: true,
-    });
-
+    const job = await JobPost.findById(id);
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    res.json(job);
+    const profile = await CatererProfile.findOne({ user: req.user.userId }).select("_id").lean();
+    if (!profile || job.caterer.toString() !== profile._id.toString()) {
+      return res.status(403).json({ message: "You do not own this job" });
+    }
+
+    const allowedFields = [
+      "title",
+      "description",
+      "location",
+      "jobType",
+      "startDate",
+      "endDate",
+      "salaryAmount",
+      "salaryPeriod",
+      "minExperience",
+      "requiredSkills",
+      "workHoursFrom",
+      "workHoursTo",
+      "supervisorName",
+    ];
+    const update = Object.fromEntries(
+      allowedFields
+        .filter((field) => Object.prototype.hasOwnProperty.call(req.body, field))
+        .map((field) => [field, req.body[field]])
+    );
+
+    if (update.startDate !== undefined) update.startDate = new Date(update.startDate);
+    if (update.endDate !== undefined) update.endDate = update.endDate ? new Date(update.endDate) : undefined;
+    if (update.salaryAmount !== undefined) update.salaryAmount = Number(update.salaryAmount);
+    if (update.requiredSkills !== undefined) {
+      update.skills = Array.isArray(update.requiredSkills)
+        ? update.requiredSkills
+        : typeof update.requiredSkills === "string"
+        ? update.requiredSkills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
+      delete update.requiredSkills;
+    }
+
+    const updatedJob = await JobPost.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.json(updatedJob);
   } catch (err) {
     next(err);
   }
@@ -121,11 +157,48 @@ async function updateJob(req, res, next) {
 async function deleteJob(req, res, next) {
   try {
     const { id } = req.params;
-    const deleted = await JobPost.findByIdAndDelete(id);
-    if (!deleted) {
+    const job = await JobPost.findById(id);
+    if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
+
+    const profile = await CatererProfile.findOne({ user: req.user.userId }).select("_id").lean();
+    if (!profile || job.caterer.toString() !== profile._id.toString()) {
+      return res.status(403).json({ message: "You do not own this job" });
+    }
+
+    const hasAcceptedRequests = await JobRequest.exists({ job: job._id, status: "Accepted" });
+    if (hasAcceptedRequests) {
+      return res.status(400).json({
+        message: "Jobs with accepted applications cannot be deleted",
+      });
+    }
+
+    await job.deleteOne();
     res.json({ message: "Job deleted" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * PATCH /api/jobs/:id/close
+ */
+async function closeJob(req, res, next) {
+  try {
+    const job = await JobPost.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    const profile = await CatererProfile.findOne({ user: req.user.userId }).select("_id").lean();
+    if (!profile || job.caterer.toString() !== profile._id.toString()) {
+      return res.status(403).json({ message: "You do not own this job" });
+    }
+
+    job.status = "Closed";
+    await job.save();
+    return res.json(job);
   } catch (err) {
     next(err);
   }
@@ -168,5 +241,6 @@ module.exports = {
   getJobById,
   updateJob,
   deleteJob,
+  closeJob,
 };
 

@@ -4,6 +4,7 @@ import { Home, Plus } from 'lucide-react';
 import { useEmployeeProfile } from '../../context/EmployeeProfileContext';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../lib/api';
+import { getImageUploadError } from '../../shared/utils/imageUpload';
 import {
   TAMIL_NADU_DISTRICTS,
   EMPLOYEE_ROLES,
@@ -117,7 +118,11 @@ export default function EmployeeCreateProfile() {
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) setProfileImageFile(file);
+                    if (!file) return;
+                    const imageError = getImageUploadError(file);
+                    if (imageError) { setError(imageError); e.target.value = ''; return; }
+                    setError('');
+                    setProfileImageFile(file);
                   }}
                 />
               </label>

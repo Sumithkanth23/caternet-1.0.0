@@ -8,8 +8,11 @@ const {
   updateProfile,
   getDashboard,
   getPublicCaterers,
+  getCatererBookingHistory,
+  getCatererEmployeeHistory,
 } = require("../controllers/catererController");
 const { uploadServiceLogo } = require("../middleware/upload");
+const { verifyToken } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -30,6 +33,10 @@ router.get("/dashboard/:id", getDashboard);
 
 // Public listing for user UI
 router.get("/public", getPublicCaterers);
+
+// Completed-history views for the authenticated caterer
+router.get("/history/bookings", verifyToken, getCatererBookingHistory);
+router.get("/history/employees", verifyToken, getCatererEmployeeHistory);
 
 module.exports = router;
 

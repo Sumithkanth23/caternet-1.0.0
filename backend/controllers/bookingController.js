@@ -9,8 +9,23 @@ const User = require("../models/User");
  */
 async function createBooking(req, res, next) {
   try {
-    const { userId, userEmail, catererId, menuId, eventDate, guestCount, customerName, customerPhone, totalAmount } =
-      req.body;
+    const {
+      userId,
+      userEmail,
+      catererId,
+      menuId,
+      eventDate,
+      eventType,
+      startTime,
+      endTime,
+      venueName,
+      venueAddress,
+      mapLocation,
+      guestCount,
+      customerName,
+      customerPhone,
+      totalAmount,
+    } = req.body;
 
     if ((!userId && !userEmail) || !catererId || !menuId || !eventDate || !guestCount || !customerName || !customerPhone) {
       return res.status(400).json({
@@ -50,6 +65,12 @@ async function createBooking(req, res, next) {
       caterer: catererId,
       menu: menuId,
       eventDate: parsedEventDate,
+      eventType,
+      startTime,
+      endTime,
+      venueName,
+      venueAddress,
+      mapLocation,
       guestCount: Number(guestCount),
       customerName: customerName.trim(),
       customerPhone: customerPhone.trim(),
@@ -209,11 +230,33 @@ async function updateBookingChecklist(req, res, next) {
   }
 }
 
+/**
+ * GET /api/bookings/user/history
+ * Completed bookings for the authenticated customer.
+ */
+async function getUserBookingHistory(req, res, next) {
+  try {
+    const bookings = await Booking.find({
+      user: req.user.userId,
+      status: "Completed",
+    })
+      .populate("caterer", "serviceName logoUrl")
+      .populate("menu", "packageName")
+      .sort({ completedAt: -1 })
+      .lean();
+
+    return res.json(bookings);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createBooking,
   getBookingsForCaterer,
   getBookingsForUser,
   updateBookingStatus,
   updateBookingChecklist,
+  getUserBookingHistory,
 };
 

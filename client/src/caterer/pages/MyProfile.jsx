@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Building2, MapPin, Pencil, Save } from 'lucide-react';
 import { useCatererProfile } from '../../context/CatererProfileContext';
 import {
   TAMIL_NADU_DISTRICTS,
@@ -50,15 +51,20 @@ export default function MyProfile() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
+    <div className="space-y-6 max-w-5xl">
+      <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4 min-w-0">
+            {form.logoUrl ? <img src={toAbsoluteUrl(form.logoUrl)} alt="Service logo" className="w-16 h-16 rounded-2xl object-cover border border-blue-100" /> : <div className="grid w-16 h-16 shrink-0 place-items-center rounded-2xl bg-blue-100 text-blue-700"><Building2 size={28} /></div>}
+            <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Caterer account</p><h1 className="text-2xl font-bold text-gray-800 truncate">{form.serviceName || 'My Profile'}</h1><p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={15} /> {form.district || 'Add your district'}</p></div>
+          </div>
         {!editing ? (
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 font-medium"
           >
+            <Pencil size={17} />
             Edit Profile
           </button>
         ) : (
@@ -66,19 +72,17 @@ export default function MyProfile() {
             <button type="button" onClick={() => setEditing(false)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
               Cancel
             </button>
-            <button type="button" onClick={handleSave} className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium">
+            <button type="button" onClick={handleSave} className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 font-medium">
+              <Save size={17} />
               Save
             </button>
           </div>
         )}
-      </div>
+        </div>
+        <p className="mt-5 border-t border-gray-100 pt-4 text-sm text-gray-500">Keep your service details accurate so customers can confidently choose your catering business.</p>
+      </section>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-        {form.logoUrl && (
-          <div className="flex justify-start">
-            <img src={toAbsoluteUrl(form.logoUrl)} alt="Logo" className="w-24 h-24 rounded-xl object-cover" />
-          </div>
-        )}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-6">
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

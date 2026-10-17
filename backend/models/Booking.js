@@ -23,6 +23,31 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    eventType: {
+      type: String,
+      enum: ["Wedding", "Birthday", "Engagement", "Corporate", "Temple Function", "Other"],
+      default: "Other",
+    },
+    startTime: {
+      type: String,
+      default: "",
+    },
+    endTime: {
+      type: String,
+      default: "",
+    },
+    venueName: {
+      type: String,
+      default: "",
+    },
+    venueAddress: {
+      type: String,
+      default: "",
+    },
+    mapLocation: {
+      type: String,
+      default: "",
+    },
     guestCount: {
       type: Number,
       required: true,
@@ -43,7 +68,7 @@ const bookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Accepted", "Declined"],
+      enum: ["Pending", "Accepted", "Declined", "Completed"],
       default: "Pending",
     },
     declineReason: {
@@ -63,6 +88,14 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
     },
     checklistArchived: {
+      type: Boolean,
+      default: false,
+    },
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+    autoCompleted: {
       type: Boolean,
       default: false,
     },

@@ -38,7 +38,9 @@ export default function MyRequests() {
       !search ||
       catererName.toLowerCase().includes(search.toLowerCase()) ||
       jobTitle.toLowerCase().includes(search.toLowerCase());
-    return matchTab && matchSearch;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const isPastAccepted = r.status === 'Accepted' && r.job?.startDate && new Date(r.job.startDate) < today;
+    return matchTab && matchSearch && !isPastAccepted;
   });
 
   return (

@@ -1,11 +1,149 @@
 @import "tailwindcss";
 
+/*
+ * CaterNet visual system
+ *
+ * The application is intentionally built from Tailwind colour utilities.  By
+ * assigning every neutral and former accent scale to this sea-blue family,
+ * every route (including the dashboards, forms, dialogs, and empty states)
+ * shares the same visual language without scattering one-off colour values.
+ */
+@theme {
+  /* Blue-tinted whites and readable blue-grey type */
+  --color-gray-50: #f6fcfd;
+  --color-gray-100: #eaf6f8;
+  --color-gray-200: #d6ebef;
+  --color-gray-300: #b8d8df;
+  --color-gray-400: #7faab5;
+  --color-gray-500: #527784;
+  --color-gray-600: #365b69;
+  --color-gray-700: #254653;
+  --color-gray-800: #163743;
+  --color-gray-900: #092631;
+
+  /* Deep sea surfaces used by the employee and caterer navigation */
+  --color-slate-50: #f4fbfc;
+  --color-slate-100: #e4f3f5;
+  --color-slate-200: #c9e4e8;
+  --color-slate-300: #a4cbd2;
+  --color-slate-400: #75a5af;
+  --color-slate-500: #4d7e89;
+  --color-slate-600: #315f6b;
+  --color-slate-700: #1e4c59;
+  --color-slate-800: #103d4b;
+  --color-slate-900: #082b37;
+
+  /* Core sea-blue action scale */
+  --color-blue-50: #effcfd;
+  --color-blue-100: #d8f6f8;
+  --color-blue-200: #b5ebef;
+  --color-blue-300: #80dce4;
+  --color-blue-400: #3fc2d0;
+  --color-blue-500: #159daf;
+  --color-blue-600: #087f95;
+  --color-blue-700: #08677b;
+  --color-blue-800: #0a5364;
+  --color-blue-900: #0b4554;
+
+  /* Legacy accent utilities map into the same family for consistent pages. */
+  --color-sky-50: #effcfd;
+  --color-sky-100: #d8f6f8;
+  --color-sky-200: #b5ebef;
+  --color-sky-300: #80dce4;
+  --color-sky-400: #3fc2d0;
+  --color-sky-500: #159daf;
+  --color-sky-600: #087f95;
+  --color-sky-700: #08677b;
+  --color-sky-800: #0a5364;
+  --color-sky-900: #0b4554;
+  --color-cyan-50: #effcfd;
+  --color-cyan-100: #d8f6f8;
+  --color-cyan-200: #b5ebef;
+  --color-cyan-300: #80dce4;
+  --color-cyan-400: #3fc2d0;
+  --color-cyan-500: #159daf;
+  --color-cyan-600: #087f95;
+  --color-cyan-700: #08677b;
+  --color-cyan-800: #0a5364;
+  --color-cyan-900: #0b4554;
+  --color-orange-50: #effcfd;
+  --color-orange-100: #d8f6f8;
+  --color-orange-200: #b5ebef;
+  --color-orange-300: #80dce4;
+  --color-orange-400: #3fc2d0;
+  --color-orange-500: #159daf;
+  --color-orange-600: #087f95;
+  --color-orange-700: #08677b;
+  --color-orange-800: #0a5364;
+  --color-orange-900: #0b4554;
+  --color-amber-50: #effcfd;
+  --color-amber-100: #d8f6f8;
+  --color-amber-200: #b5ebef;
+  --color-amber-300: #80dce4;
+  --color-amber-400: #3fc2d0;
+  --color-amber-500: #159daf;
+  --color-amber-600: #087f95;
+  --color-amber-700: #08677b;
+  --color-amber-800: #0a5364;
+  --color-amber-900: #0b4554;
+  --color-yellow-50: #effcfd;
+  --color-yellow-100: #d8f6f8;
+  --color-yellow-200: #b5ebef;
+  --color-yellow-300: #80dce4;
+  --color-yellow-400: #3fc2d0;
+  --color-yellow-500: #159daf;
+  --color-yellow-600: #087f95;
+  --color-yellow-700: #08677b;
+  --color-yellow-800: #0a5364;
+  --color-yellow-900: #0b4554;
+  --color-green-50: #effcfd;
+  --color-green-100: #d8f6f8;
+  --color-green-200: #b5ebef;
+  --color-green-300: #80dce4;
+  --color-green-400: #3fc2d0;
+  --color-green-500: #159daf;
+  --color-green-600: #087f95;
+  --color-green-700: #08677b;
+  --color-green-800: #0a5364;
+  --color-green-900: #0b4554;
+  --color-emerald-50: #effcfd;
+  --color-emerald-100: #d8f6f8;
+  --color-emerald-200: #b5ebef;
+  --color-emerald-300: #80dce4;
+  --color-emerald-400: #3fc2d0;
+  --color-emerald-500: #159daf;
+  --color-emerald-600: #087f95;
+  --color-emerald-700: #08677b;
+  --color-emerald-800: #0a5364;
+  --color-emerald-900: #0b4554;
+  --color-indigo-50: #effcfd;
+  --color-indigo-100: #d8f6f8;
+  --color-indigo-200: #b5ebef;
+  --color-indigo-300: #80dce4;
+  --color-indigo-400: #3fc2d0;
+  --color-indigo-500: #159daf;
+  --color-indigo-600: #087f95;
+  --color-indigo-700: #08677b;
+  --color-indigo-800: #0a5364;
+  --color-indigo-900: #0b4554;
+  --color-purple-50: #effcfd;
+  --color-purple-100: #d8f6f8;
+  --color-purple-200: #b5ebef;
+  --color-purple-300: #80dce4;
+  --color-purple-400: #3fc2d0;
+  --color-purple-500: #159daf;
+  --color-purple-600: #087f95;
+  --color-purple-700: #08677b;
+  --color-purple-800: #0a5364;
+  --color-purple-900: #0b4554;
+}
+
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #1f2937;
-  background-color: #ffffff;
+  color: #163743;
+  background-color: #f6fcfd;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -16,4 +154,46 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: #f6fcfd;
+}
+
+button, a, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #159daf;
+}
+
+/* Reusable, calm feedback surfaces shared by forms and dashboard states. */
+.ui-alert {
+  border: 1px solid #b5ebef;
+  border-radius: 0.75rem;
+  background: #effcfd;
+  color: #0a5364;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+}
+
+.ui-empty, .ui-loading {
+  display: grid;
+  min-height: 11rem;
+  place-items: center;
+  border: 1px dashed #b8d8df;
+  border-radius: 1rem;
+  background: #fff;
+  color: #527784;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.ui-skeleton {
+  border-radius: 0.75rem;
+  background: linear-gradient(90deg, #eaf6f8 25%, #f6fcfd 50%, #eaf6f8 75%);
+  background-size: 200% 100%;
+  animation: caternet-shimmer 1.5s infinite;
+}
+
+@keyframes caternet-shimmer {
+  to { background-position: -200% 0; }
 }

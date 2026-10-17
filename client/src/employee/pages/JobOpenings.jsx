@@ -62,6 +62,12 @@ export default function JobOpenings() {
   const formatDate = (d) =>
     d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 
+  const activeJobs = jobs.filter((job) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return job.status === 'Open' && (!job.startDate || new Date(job.startDate) >= today);
+  });
+
   return (
     <div className="space-y-6">
       <motion.h1 {...revealUp} className="text-2xl font-bold text-gray-800">
@@ -107,7 +113,7 @@ export default function JobOpenings() {
           >
             {[1, 2, 3].map((i) => <JobSkeleton key={i} />)}
           </motion.div>
-        ) : jobs.length === 0 ? (
+        ) : activeJobs.length === 0 ? (
           <motion.div
             key="empty"
             initial={{ opacity: 0, y: 20 }}
@@ -125,7 +131,7 @@ export default function JobOpenings() {
             animate="animate"
             className="grid gap-4"
           >
-            {jobs.map((job) => (
+            {activeJobs.map((job) => (
               <motion.div
                 key={job._id}
                 variants={staggerItem}

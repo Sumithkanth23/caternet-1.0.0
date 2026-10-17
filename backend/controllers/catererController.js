@@ -446,6 +446,59 @@ async function getPublicCaterers(req, res, next) {
   }
 }
 
+/**
+ * GET /api/caterer/history/bookings
+ * Completed bookings for the authenticated caterer profile.
+ */
+async function getCatererBookingHistory(req, res, next) {
+  try {
+    const profile = await CatererProfile.findOne({ user: req.user.userId }).select("_id").lean();
+    if (!profile) {
+      return res.status(404).json({ message: "Caterer profile not found" });
+    }
+
+    const bookings = await Booking.find({
+      caterer: profile._id,
+      status: "Completed",
+    })
+      .populate("user", "name")
+      .populate("menu", "packageName")
+      .sort({ completedAt: -1 })
+      .lean();
+
+    return res.json(bookings);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/caterer/history/employees
+ * Completed employee engagements for the authenticated caterer profile.
+ */
+async function getCatererEmployeeHistory(req, res, next) {
+  try {
+    const profile = await CatererProfile.findOne({ user: req.user.userId }).select("_id").lean();
+    if (!profile) {
+      return res.status(404).json({ message: "Caterer profile not found" });
+    }
+
+    const jobIds = await JobPost.distinct("_id", { caterer: profile._id });
+    const requests = await JobRequest.find({
+      job: { $in: jobIds },
+      status: "Completed",
+    })
+      .populate("employee", "fullName role district")
+      .populate("job", "title salaryAmount salaryPeriod")
+      .sort({ completedAt: -1 })
+      .lean();
+
+    return res.json(requests);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createProfile,
   getProfileById,
@@ -453,6 +506,8 @@ module.exports = {
   updateProfile,
   getDashboard,
   getPublicCaterers,
+  getCatererBookingHistory,
+  getCatererEmployeeHistory,
 };
 
 

@@ -8,7 +8,9 @@ const {
   getJobById,
   updateJob,
   deleteJob,
+  closeJob,
 } = require("../controllers/jobController");
+const { verifyToken } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -23,8 +25,9 @@ router.get("/caterer/:id", getJobsByCaterer);
 
 // Single job
 router.get("/:id", getJobById);
-router.put("/:id", updateJob);
-router.delete("/:id", deleteJob);
+router.put("/:id", verifyToken, updateJob);
+router.delete("/:id", verifyToken, deleteJob);
+router.patch("/:id/close", verifyToken, closeJob);
 
 module.exports = router;
 

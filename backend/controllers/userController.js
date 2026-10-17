@@ -105,10 +105,21 @@ async function getMe(req, res, next) {
   try {
     const user = await User.findById(req.user.userId).select("-passwordHash");
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ id: user._id, name: user.name, email: user.email, role: user.role });
+    res.json({ id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, district: user.district, address: user.address, profileImageUrl: user.profileImageUrl });
   } catch (err) {
     next(err);
   }
 }
 
-module.exports = { register, login, getMe };
+async function updateProfile(req, res, next) {
+  try {
+    const allowed = ["name", "phone", "district", "address"];
+    const update = Object.fromEntries(allowed.filter((field) => Object.prototype.hasOwnProperty.call(req.body, field)).map((field) => [field, req.body[field]]));
+    if (req.file) update.profileImageUrl = req.file.path;
+    const user = await User.findByIdAndUpdate(req.user.userId, update, { new: true, runValidators: true }).select("-passwordHash");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, district: user.district, address: user.address, profileImageUrl: user.profileImageUrl });
+  } catch (err) { next(err); }
+}
+
+module.exports = { register, login, getMe, updateProfile };

@@ -4,6 +4,7 @@ import { Plus, Upload, Trash2, X } from 'lucide-react';
 import { MENU_TYPES, CUISINE_TYPES, GUEST_SLABS, EVENT_TYPES, AVAILABLE_DAYS } from '../../data/catererData';
 import { useCatererProfile } from '../../context/CatererProfileContext';
 import { apiFetch, toAbsoluteUrl } from '../../lib/api';
+import { getImageUploadError } from '../../shared/utils/imageUpload';
 
 const CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Side Dish', 'Dessert', 'Beverage'];
 
@@ -502,6 +503,9 @@ export default function AddMenu() {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
+                const imageError = getImageUploadError(file);
+                if (imageError) { setError(imageError); e.target.value = ''; return; }
+                setError('');
                 if (menuImagePreview) URL.revokeObjectURL(menuImagePreview);
                 setMenuImageFile(file);
                 setMenuImagePreview(URL.createObjectURL(file));

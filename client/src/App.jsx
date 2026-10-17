@@ -18,6 +18,9 @@ import UserDashboard from './user/pages/Dashboard';
 import ServiceDetails from './user/pages/ServiceDetails';
 import SearchResults from './user/pages/SearchResults';
 import MyBookings from './user/pages/MyBookings';
+import UserHistory from './user/pages/UserHistory';
+import UserProfile from './user/pages/UserProfile';
+import CreateUserProfile from './user/pages/CreateUserProfile';
 
 // Caterer pages
 import CatererLayout from './caterer/CatererLayout';
@@ -29,6 +32,8 @@ import PostJob from './caterer/pages/PostJob';
 import EmployeeRequests from './caterer/pages/EmployeeRequests';
 import BookingRequests from './caterer/pages/BookingRequests';
 import MyProfile from './caterer/pages/MyProfile';
+import ManageJobs from './caterer/pages/ManageJobs';
+import CatererHistory from './caterer/pages/CatererHistory';
 
 // Employee pages
 import EmployeeLayout from './employee/EmployeeLayout';
@@ -37,6 +42,7 @@ import EmployeeDashboard from './employee/pages/Dashboard';
 import JobOpenings from './employee/pages/JobOpenings';
 import MyRequests from './employee/pages/MyRequests';
 import EmployeeMyProfile from './employee/pages/MyProfile';
+import EmployeeHistory from './employee/pages/EmployeeHistory';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -70,6 +76,9 @@ function AnimatedRoutes() {
             </AuthGuard>
           }
         />
+        <Route path="/user/history" element={<AuthGuard role="user"><PageTransition><UserHistory /></PageTransition></AuthGuard>} />
+        <Route path="/user/profile" element={<AuthGuard role="user"><PageTransition><UserProfile /></PageTransition></AuthGuard>} />
+        <Route path="/user/create-profile" element={<AuthGuard role="user"><PageTransition><CreateUserProfile /></PageTransition></AuthGuard>} />
 
         {/* Caterer protected routes */}
         <Route
@@ -94,6 +103,8 @@ function AnimatedRoutes() {
           <Route path="menus/edit/:id" element={<PageTransition><AddMenu /></PageTransition>} />
           <Route path="menus/manage" element={<PageTransition><ManageMenus /></PageTransition>} />
           <Route path="workforce/post-job" element={<PageTransition><PostJob /></PageTransition>} />
+          <Route path="manage-jobs" element={<PageTransition><ManageJobs /></PageTransition>} />
+          <Route path="history" element={<PageTransition><CatererHistory /></PageTransition>} />
           <Route path="workforce/employee-requests" element={<PageTransition><EmployeeRequests /></PageTransition>} />
           <Route path="workforce/booking-requests" element={<PageTransition><BookingRequests /></PageTransition>} />
           <Route path="profile" element={<PageTransition><MyProfile /></PageTransition>} />
@@ -120,6 +131,7 @@ function AnimatedRoutes() {
           <Route path="dashboard" element={<PageTransition><EmployeeDashboard /></PageTransition>} />
           <Route path="job-openings" element={<PageTransition><JobOpenings /></PageTransition>} />
           <Route path="my-requests" element={<PageTransition><MyRequests /></PageTransition>} />
+          <Route path="history" element={<PageTransition><EmployeeHistory /></PageTransition>} />
           <Route path="profile" element={<PageTransition><EmployeeMyProfile /></PageTransition>} />
         </Route>
 

@@ -78,7 +78,14 @@ export default function LoginPage() {
 
       login(data);
       const redirect = searchParams.get('redirect');
-      navigate(redirect || DASHBOARD_MAP[data.user.role] || '/');
+      if (redirect) {
+        navigate(redirect);
+      } else if (data.user.role === 'user') {
+        const profile = await apiFetch('/api/user/me');
+        navigate(profile.phone && profile.district ? '/user/dashboard' : '/user/create-profile');
+      } else {
+        navigate(DASHBOARD_MAP[data.user.role] || '/');
+      }
     } catch (err) {
       setError(err?.message || 'Login failed. Please check your credentials.');
       triggerShake();

@@ -10,6 +10,7 @@ import {
   MessageSquarePlus,
 } from 'lucide-react';
 import ReviewModal from './ReviewModal';
+import BookingTimeline from '../../components/BookingTimeline';
 
 function StatusBadge({ status }) {
   if (status === 'pending') {
@@ -107,6 +108,7 @@ export default function BookingCard({ booking, review: initialReview, canReview,
           </ul>
 
           <p className="text-gray-400 text-xs mt-3 mb-3">Booked on: {booking.bookedOn}</p>
+          <BookingTimeline status={booking.status} createdAt={booking.createdAt} eventDate={booking.eventDateRaw} />
 
           {/* --- Review area --- */}
           {review ? (

@@ -1,10 +1,7 @@
-/**
- * Image paths – add your image files to src/assets/ and assign the import or path here.
- * Syntax: empty string with comment = image name reference.
- */
+import caternetHero from '../assets/caternet-hero.png';
 
 // Hero
-export const heroBackground = ''; /* image-55e1e879-5200-4ce7-a62f-28e83ac8f722.png */
+export const heroBackground = caternetHero;
 
 // Popular services (Sri Mahalakshmi, Chettinad, Supreme)
 export const popularImage1 = ''; /* image-55e1e879-5200-4ce7-a62f-28e83ac8f722.png */

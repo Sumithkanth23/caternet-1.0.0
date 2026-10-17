@@ -3,6 +3,7 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const { runAutoComplete } = require("./jobs/autoComplete");
 
 const catererRoutes = require("./routes/catererRoutes");
 const menuRoutes = require("./routes/menuRoutes");
@@ -15,7 +16,15 @@ const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 
-connectDB();
+connectDB()
+  .then(() => {
+    // Run after the database connection is ready, then once every 24 hours.
+    runAutoComplete();
+    setInterval(runAutoComplete, 24 * 60 * 60 * 1000);
+  })
+  .catch((err) => {
+    console.error("Database connection failed", err);
+  });
 
 // Middlewares
 app.use(cors());

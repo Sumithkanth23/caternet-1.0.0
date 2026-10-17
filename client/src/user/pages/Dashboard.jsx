@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CalendarCheck, Search, Star, User } from 'lucide-react';
+import { CalendarCheck, Search, Star, User, History } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -30,6 +30,9 @@ const quickActions = [
     iconColor: 'text-amber-500',
     title: 'Top Rated',
     desc: 'Explore best caterers',
+  },
+  {
+    to: '/user/history', icon: History, iconBg: 'bg-orange-50', iconColor: 'text-orange-600', title: 'History', desc: 'View completed events',
   },
 ];
 

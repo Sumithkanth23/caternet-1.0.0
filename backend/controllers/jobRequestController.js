@@ -10,7 +10,39 @@ const EmployeeProfile = require("../models/EmployeeProfile");
  */
 async function createJobRequest(req, res, next) {
   try {
-    const { jobId, employeeId, experience, skills, note } = req.body;
+    const {
+      jobId,
+      employeeId,
+      experience,
+      skills,
+      note,
+      applicantEmail,
+      applicantCity,
+      languagesKnown,
+      previousExperience,
+      skillsList,
+    } = req.body;
+
+    const parseStringArray = (value) => {
+      if (Array.isArray(value)) return value;
+      if (typeof value !== "string" || !value.trim()) return [];
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return value.split(",").map((item) => item.trim()).filter(Boolean);
+      }
+    };
+    const parseExperienceArray = (value) => {
+      if (Array.isArray(value)) return value;
+      if (typeof value !== "string" || !value.trim()) return [];
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    };
 
     if (!jobId || !employeeId) {
       return res.status(400).json({ message: "jobId and employeeId are required" });
@@ -44,6 +76,11 @@ async function createJobRequest(req, res, next) {
         : typeof skills === "string"
         ? skills.split(",").map((s) => s.trim())
         : [],
+      applicantEmail: applicantEmail || "",
+      applicantCity: applicantCity || employeeProfile.district || "",
+      languagesKnown: parseStringArray(languagesKnown),
+      previousExperience: parseExperienceArray(previousExperience),
+      skillsList: parseStringArray(skillsList),
       // Denormalized snapshot – always available even if the profile is later changed/deleted
       applicantName: employeeProfile.fullName || '',
       applicantImageUrl: employeeProfile.profileImageUrl || '',
@@ -216,11 +253,43 @@ async function updateJobRequestChecklist(req, res, next) {
   }
 }
 
+/**
+ * GET /api/job-requests/employee/history
+ * Completed jobs for the authenticated employee profile.
+ */
+async function getEmployeeJobHistory(req, res, next) {
+  try {
+    const employeeProfile = await EmployeeProfile.findOne({ user: req.user.userId })
+      .select("_id")
+      .lean();
+    if (!employeeProfile) {
+      return res.status(404).json({ message: "Employee profile not found" });
+    }
+
+    const requests = await JobRequest.find({
+      employee: employeeProfile._id,
+      status: "Completed",
+    })
+      .populate({
+        path: "job",
+        select: "title location salaryAmount salaryPeriod startDate workHoursFrom workHoursTo caterer",
+        populate: { path: "caterer", select: "serviceName" },
+      })
+      .sort({ completedAt: -1 })
+      .lean();
+
+    return res.json(requests);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createJobRequest,
   getJobRequestsForCaterer,
   getJobRequestsForEmployee,
   updateJobRequestStatus,
   updateJobRequestChecklist,
+  getEmployeeJobHistory,
 };
 

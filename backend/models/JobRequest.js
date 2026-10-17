@@ -21,9 +21,35 @@ const jobRequestSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    applicantEmail: {
+      type: String,
+      default: "",
+    },
+    applicantCity: {
+      type: String,
+      default: "",
+    },
+    languagesKnown: {
+      type: [String],
+      default: [],
+    },
+    previousExperience: {
+      type: [
+        {
+          employerName: String,
+          role: String,
+          duration: String,
+        },
+      ],
+      default: [],
+    },
+    skillsList: {
+      type: [String],
+      default: [],
+    },
     status: {
       type: String,
-      enum: ["Pending", "Accepted", "Declined"],
+      enum: ["Pending", "Accepted", "Declined", "Completed"],
       default: "Pending",
     },
     note: {
@@ -55,6 +81,14 @@ const jobRequestSchema = new mongoose.Schema(
       type: Date,
     },
     checklistArchived: {
+      type: Boolean,
+      default: false,
+    },
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+    autoCompleted: {
       type: Boolean,
       default: false,
     },

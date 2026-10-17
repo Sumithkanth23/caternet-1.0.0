@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    phone: { type: String, default: "", trim: true },
+    district: { type: String, default: "", trim: true },
+    address: { type: String, default: "", trim: true },
+    profileImageUrl: { type: String, default: "" },
   },
   {
     timestamps: true,

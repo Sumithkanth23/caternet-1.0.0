@@ -43,6 +43,18 @@ const jobPostSchema = new mongoose.Schema(
     minExperience: {
       type: String,
     },
+    workHoursFrom: {
+      type: String,
+      default: "",
+    },
+    workHoursTo: {
+      type: String,
+      default: "",
+    },
+    supervisorName: {
+      type: String,
+      default: "",
+    },
     skills: {
       type: [String],
       default: [],

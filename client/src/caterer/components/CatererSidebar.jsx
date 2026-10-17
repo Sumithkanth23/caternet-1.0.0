@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -8,6 +8,7 @@ import {
   Briefcase,
   UserCheck,
   CalendarCheck,
+  History,
   User,
   ChevronDown,
   ChevronRight,
@@ -34,16 +35,19 @@ const SIDEBAR_ITEMS = [
     icon: Users,
     children: [
       { path: '/caterer/workforce/post-job', label: 'Post Job', icon: Briefcase },
+      { path: '/caterer/manage-jobs', label: 'Manage Jobs', icon: List },
       { path: '/caterer/workforce/employee-requests', label: 'Employee Request', icon: UserCheck },
       { path: '/caterer/workforce/booking-requests', label: 'Booking Request', icon: CalendarCheck },
+      { path: '/caterer/history', label: 'History', icon: History },
     ],
   },
   { path: '/caterer/profile', label: 'My Profile', icon: User },
 ];
 
-export default function CatererSidebar() {
+export default function CatererSidebar({ mobileOpen = false, onMobileClose }) {
   const [menusOpen, setMenusOpen] = useState(true);
   const [workforceOpen, setWorkforceOpen] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const { user } = useAuth();
   const { profile, setProfile } = useCatererProfile();
   const displayName = profile?.serviceName || user?.email?.split('@')[0] || 'Caterer';
@@ -58,36 +62,50 @@ export default function CatererSidebar() {
   return (
     <motion.aside
       initial={{ opacity: 0, x: -64 }}
-      animate={{ opacity: 1, x: 0 }}
+      animate={{ opacity: 1, x: 0, width: expanded || mobileOpen ? 256 : 76 }}
       transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-      className="w-64 min-h-screen bg-slate-800 text-white flex flex-col border-r border-slate-700"
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => { if (!mobileOpen) setExpanded(false); }}
+      onFocusCapture={() => setExpanded(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(false);
+      }}
+      className={`fixed inset-y-0 left-0 z-50 min-h-screen shrink-0 overflow-hidden bg-slate-800 text-white flex flex-col border-r border-slate-700 shadow-lg transition-transform duration-200 md:relative md:z-40 md:translate-x-0 md:shadow-sm ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      aria-label="Caterer navigation"
     >
-      <div className="p-4 border-b border-slate-700">
-        <div className="flex items-center gap-3">
+      <div className={`border-b border-slate-700 transition-[padding] duration-200 ${expanded || mobileOpen ? 'p-4' : 'p-3'}`}>
+        <div className={`flex items-center ${expanded || mobileOpen ? 'gap-3' : 'justify-center'}`}>
           <SidebarAvatarUpload
             imageUrl={profile?.logoUrl}
             displayName={displayName}
             onUpload={handleAvatarUpload}
             onSuccess={setProfile}
           />
-          <span className="font-medium truncate">{displayName}</span>
+          <span className={`whitespace-nowrap overflow-hidden font-medium transition-all duration-200 ${expanded || mobileOpen ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}`}>
+            {displayName}
+          </span>
         </div>
       </div>
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className={`flex-1 space-y-1 overflow-y-auto transition-[padding] duration-200 ${expanded || mobileOpen ? 'p-3' : 'p-2'}`}>
         {SIDEBAR_ITEMS.map((item) => {
           if (item.path) {
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
+                onClick={onMobileClose}
+                title={expanded || mobileOpen ? undefined : item.label}
+                aria-label={item.label}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg transition ${
+                  `flex items-center py-2.5 rounded-lg transition ${expanded || mobileOpen ? 'gap-3 px-3' : 'justify-center px-2'} ${
                     isActive ? 'bg-orange-500 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'
                   }`
                 }
               >
                 <item.icon size={20} className="shrink-0" />
-                <span>{item.label}</span>
+                <span className={`whitespace-nowrap overflow-hidden transition-all duration-200 ${expanded || mobileOpen ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}`}>
+                  {item.label}
+                </span>
               </NavLink>
             );
           }
@@ -100,16 +118,20 @@ export default function CatererSidebar() {
               <button
                 type="button"
                 onClick={() => setIsOpen((o) => !o)}
-                className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition"
+                title={expanded || mobileOpen ? undefined : item.label}
+                aria-label={item.label}
+                className={`flex items-center w-full py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition ${expanded || mobileOpen ? 'justify-between px-3' : 'justify-center px-2'}`}
               >
-                <div className="flex items-center gap-3">
+                <div className={`flex items-center ${expanded || mobileOpen ? 'gap-3' : ''}`}>
                   <item.icon size={20} className="shrink-0" />
-                  <span>{item.label}</span>
+                  <span className={`whitespace-nowrap overflow-hidden transition-all duration-200 ${expanded || mobileOpen ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'}`}>
+                    {item.label}
+                  </span>
                 </div>
-                {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                {(expanded || mobileOpen) && (isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />)}
               </button>
               <AnimatePresence initial={false}>
-                {isOpen && (
+                {(expanded || mobileOpen) && isOpen && (
                   <motion.div
                     key="children"
                     initial={{ opacity: 0, height: 0 }}
@@ -122,6 +144,7 @@ export default function CatererSidebar() {
                       <NavLink
                         key={child.path}
                         to={child.path}
+                        onClick={onMobileClose}
                         className={({ isActive }) =>
                           `flex items-center gap-2 px-2 py-2 rounded text-sm transition ${
                             isActive ? 'bg-orange-500 text-white' : 'text-slate-400 hover:bg-slate-700 hover:text-white'

@@ -40,6 +40,8 @@ export default function MyBookings() {
   // Map of bookingId -> review object (null if none)
   const [reviewMap, setReviewMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [sortOrder, setSortOrder] = useState('Newest');
 
   // Fetch bookings + all reviews by this user in parallel
   useEffect(() => {
@@ -85,6 +87,7 @@ export default function MyBookings() {
       : newReview.booking;
     setReviewMap((prev) => ({ ...prev, [String(key)]: newReview }));
   };
+  const visibleBookings = bookings.filter((booking) => booking.status === 'Declined' || ((booking.status === 'Pending' || booking.status === 'Accepted') && !isEventPast(booking.eventDate))).filter((booking) => statusFilter === 'All' || booking.status === statusFilter).sort((a, b) => sortOrder === 'Event date' ? new Date(a.eventDate) - new Date(b.eventDate) : new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -96,12 +99,13 @@ export default function MyBookings() {
           Track your catering service booking requests.
         </p>
 
+        <div className="mb-6 flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm font-medium text-gray-600">{visibleBookings.length} active booking{visibleBookings.length === 1 ? '' : 's'}</p><div className="flex gap-2"><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"><option>All</option><option>Pending</option><option>Accepted</option><option>Declined</option></select><select value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"><option>Newest</option><option>Event date</option></select></div></div>
         {loading ? (
           <div className="flex justify-center py-16">
             <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : bookings.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-8 text-center">
+        ) : visibleBookings.length === 0 ? (
+          <div className="ui-empty">
             <p className="text-gray-600 mb-4">You haven't made any bookings yet.</p>
             <a
               href="/"
@@ -112,7 +116,7 @@ export default function MyBookings() {
           </div>
         ) : (
           <div className="space-y-6">
-            {bookings.map((booking) => {
+            {visibleBookings.map((booking) => {
               const bookingId = String(booking._id);
               const existingReview = reviewMap[bookingId] || null;
               const accepted = booking.status === 'Accepted';
@@ -136,6 +140,8 @@ export default function MyBookings() {
                     guests: booking.guestCount || 0,
                     status: booking.status?.toLowerCase() || 'pending',
                     bookedOn: formatBookingDate(booking.createdAt),
+                    createdAt: booking.createdAt,
+                    eventDateRaw: booking.eventDate,
                     declineReason: booking.declineReason || null,
                   }}
                   review={existingReview}

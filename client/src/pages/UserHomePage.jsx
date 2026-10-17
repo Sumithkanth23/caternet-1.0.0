@@ -92,7 +92,7 @@ export default function UserHomePage() {
       {/* Hero */}
       <section
         className="relative min-h-[600px] bg-cover bg-center flex items-center justify-center px-4 py-16"
-        style={{ backgroundImage: HERO_IMAGE ? `url(${HERO_IMAGE})` : 'linear-gradient(135deg, #e0f2fe 0%, #fef3c7 100%)' }}
+        style={{ backgroundImage: HERO_IMAGE ? `url(${HERO_IMAGE})` : 'linear-gradient(135deg, #e8fbfc 0%, #b5ebef 52%, #d8f6f8 100%)' }}
       >
         <div className="absolute inset-0 bg-black/30" aria-hidden />
         <div className="relative z-10 text-center max-w-3xl mx-auto">

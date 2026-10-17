@@ -10,6 +10,7 @@ export default function BookingForm({ isOpen, onClose, menu, caterer }) {
     customerPhone: '',
     eventDate: '',
     guestCount: '',
+    eventType: 'Other', startTime: '', endTime: '', venueName: '', venueAddress: '', mapLocation: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -38,6 +39,8 @@ export default function BookingForm({ isOpen, onClose, menu, caterer }) {
       setError('Please enter a valid guest count.');
       return;
     }
+    if (!form.startTime || !form.endTime || form.endTime <= form.startTime) { setError('End time must be after the event start time.'); return; }
+    if (!form.venueName.trim() || !form.venueAddress.trim()) { setError('Venue name and address are required.'); return; }
 
     setSubmitting(true);
     try {
@@ -52,13 +55,15 @@ export default function BookingForm({ isOpen, onClose, menu, caterer }) {
           customerPhone: form.customerPhone.trim(),
           eventDate: form.eventDate,
           guestCount: Number(form.guestCount),
+          eventType: form.eventType, startTime: form.startTime, endTime: form.endTime,
+          venueName: form.venueName.trim(), venueAddress: form.venueAddress.trim(), mapLocation: form.mapLocation.trim(),
           totalAmount: 0, // Can calculate later based on menu pricing
         }),
       });
       setSuccess(true);
       setTimeout(() => {
         onClose();
-        setForm({ customerName: '', customerPhone: '', eventDate: '', guestCount: '' });
+        setForm({ customerName: '', customerPhone: '', eventDate: '', guestCount: '', eventType: 'Other', startTime: '', endTime: '', venueName: '', venueAddress: '', mapLocation: '' });
         setSuccess(false);
       }, 2000);
     } catch (err) {
@@ -106,6 +111,20 @@ export default function BookingForm({ isOpen, onClose, menu, caterer }) {
               <p className="text-sm text-gray-500">{menu?.packageName}</p>
             </div>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Event Type *</label>
+            <select value={form.eventType} onChange={(e) => setForm((f) => ({ ...f, eventType: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-orange-500 outline-none">
+              {['Wedding', 'Birthday', 'Engagement', 'Corporate', 'Temple Function', 'Other'].map((type) => <option key={type}>{type}</option>)}
+            </select>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Event Start Time *</label><input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-2">Event End Time *</label><input type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))} required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+          </div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label><input type="text" value={form.venueName} onChange={(e) => setForm((f) => ({ ...f, venueName: e.target.value }))} placeholder="e.g., Sri Murugan Kalyana Mandapam" required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-2">Venue Address *</label><input type="text" value={form.venueAddress} onChange={(e) => setForm((f) => ({ ...f, venueAddress: e.target.value }))} placeholder="Enter full venue address" required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-2">Map Location <span className="text-gray-400">(optional)</span></label><input type="url" value={form.mapLocation} onChange={(e) => setForm((f) => ({ ...f, mapLocation: e.target.value }))} placeholder="Paste Google Maps link" className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">

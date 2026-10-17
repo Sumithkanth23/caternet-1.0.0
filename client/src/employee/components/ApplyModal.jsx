@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, User, Phone, Briefcase, Star, FileText } from 'lucide-react';
+import { X, User, Phone, Briefcase, Star, FileText, Plus } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 
 export default function ApplyModal({ isOpen, onClose, job, profile, onApplied }) {
@@ -7,7 +7,8 @@ export default function ApplyModal({ isOpen, onClose, job, profile, onApplied })
     fullName: profile?.fullName || '',
     phone: profile?.phone || '',
     experience: profile?.experience || '',
-    skills: (profile?.skills || []).join(', '),
+    skills: profile?.skills || [], skillInput: '',
+    email: '', city: profile?.district || '', languages: [], previousExperience: [],
     note: '',
   });
   const [submitting, setSubmitting] = useState(false);
@@ -23,10 +24,7 @@ export default function ApplyModal({ isOpen, onClose, job, profile, onApplied })
     if (!form.fullName.trim()) { setError('Please enter your full name.'); return; }
     if (!form.phone.trim())    { setError('Please enter your phone number.'); return; }
 
-    const skillsArray = form.skills
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
+    if (!form.email.trim() || !form.city.trim() || !form.languages.length || !form.skills.length) { setError('Email, city, at least one language, and one skill are required.'); return; }
 
     setSubmitting(true);
     try {
@@ -36,8 +34,10 @@ export default function ApplyModal({ isOpen, onClose, job, profile, onApplied })
           jobId: job._id,
           employeeId: profile._id,
           experience: form.experience.trim(),
-          skills: skillsArray,
+          skills: form.skills,
           note: form.note.trim(),
+          applicantEmail: form.email.trim(), applicantCity: form.city.trim(), languagesKnown: form.languages,
+          previousExperience: form.previousExperience.filter((item) => item.employerName || item.role || item.duration), skillsList: form.skills,
         }),
       });
       setSuccess(true);
@@ -93,6 +93,10 @@ export default function ApplyModal({ isOpen, onClose, job, profile, onApplied })
             </div>
           </div>
 
+          <div><label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label><input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="your@email.com" required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-2">City / Area *</label><input type="text" value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} placeholder="e.g., Tiruppur, Coimbatore" required className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-2">Languages Known *</label><div className="flex flex-wrap gap-2">{['Tamil','English','Hindi','Telugu','Malayalam','Kannada','Others'].map((language) => <button key={language} type="button" onClick={() => setForm((f) => ({ ...f, languages: f.languages.includes(language) ? f.languages.filter((item) => item !== language) : [...f.languages, language] }))} className={`px-3 py-1.5 rounded-full text-sm ${form.languages.includes(language) ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700'}`}>{language}</button>)}</div></div>
+
           {/* Full Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
@@ -144,16 +148,20 @@ export default function ApplyModal({ isOpen, onClose, job, profile, onApplied })
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
               <Star size={16} />
-              Skills (comma separated)
+              Skills *
             </label>
-            <input
+            <div className="flex gap-2"><input
               type="text"
-              value={form.skills}
-              onChange={(e) => setForm((f) => ({ ...f, skills: e.target.value }))}
-              placeholder="e.g. Cooking, Serving, Cleaning"
+              value={form.skillInput}
+              onChange={(e) => setForm((f) => ({ ...f, skillInput: e.target.value }))}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); const skill = form.skillInput.trim(); if (skill && !form.skills.includes(skill)) setForm((f) => ({ ...f, skills: [...f.skills, skill], skillInput: '' })); } }}
+              placeholder="Type a skill"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
-            />
+            /><button type="button" onClick={() => { const skill = form.skillInput.trim(); if (skill && !form.skills.includes(skill)) setForm((f) => ({ ...f, skills: [...f.skills, skill], skillInput: '' })); }} className="px-3 bg-orange-500 text-white rounded-lg"><Plus size={18} /></button></div>
+            <div className="flex flex-wrap gap-2 mt-2">{form.skills.map((skill) => <button key={skill} type="button" onClick={() => setForm((f) => ({ ...f, skills: f.skills.filter((item) => item !== skill) }))} className="px-2 py-1 rounded bg-orange-100 text-orange-700 text-xs">{skill} ×</button>)}</div>
           </div>
+
+          <div><div className="flex justify-between items-center mb-2"><label className="block text-sm font-medium text-gray-700">Previous Employers / Events</label><button type="button" onClick={() => setForm((f) => ({ ...f, previousExperience: [...f.previousExperience, { employerName: '', role: '', duration: '' }] }))} className="text-sm text-orange-600">Add Another</button></div>{form.previousExperience.map((entry, index) => <div key={index} className="grid grid-cols-3 gap-2 mb-2"><input value={entry.employerName} onChange={(e) => setForm((f) => ({ ...f, previousExperience: f.previousExperience.map((item, i) => i === index ? { ...item, employerName: e.target.value } : item) }))} placeholder="Employer" className="px-2 py-2 border rounded" /><input value={entry.role} onChange={(e) => setForm((f) => ({ ...f, previousExperience: f.previousExperience.map((item, i) => i === index ? { ...item, role: e.target.value } : item) }))} placeholder="Role" className="px-2 py-2 border rounded" /><input value={entry.duration} onChange={(e) => setForm((f) => ({ ...f, previousExperience: f.previousExperience.map((item, i) => i === index ? { ...item, duration: e.target.value } : item) }))} placeholder="Duration" className="px-2 py-2 border rounded" /></div>)}</div>
 
           {/* Note */}
           <div>

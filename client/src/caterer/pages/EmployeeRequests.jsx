@@ -53,7 +53,9 @@ export default function EmployeeRequests() {
       jobTitle.toLowerCase().includes(search.toLowerCase());
     const matchStatus =
       statusFilter === 'All Statuses' || r.status === statusFilter;
-    return matchSearch && matchStatus;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const isPastAccepted = r.status === 'Accepted' && r.job?.startDate && new Date(r.job.startDate) < today;
+    return matchSearch && matchStatus && !isPastAccepted;
   });
 
   return (

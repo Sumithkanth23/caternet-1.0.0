@@ -4,6 +4,7 @@ import { Home, Plus } from 'lucide-react';
 import { useCatererProfile } from '../../context/CatererProfileContext';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../lib/api';
+import { getImageUploadError } from '../../shared/utils/imageUpload';
 import {
   TAMIL_NADU_DISTRICTS,
   CUISINE_TYPES,
@@ -147,6 +148,9 @@ export default function CreateProfile() {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
+                  const imageError = getImageUploadError(file);
+                  if (imageError) { setError(imageError); e.target.value = ''; return; }
+                  setError('');
                   if (form.logoUrl?.startsWith('blob:')) {
                     URL.revokeObjectURL(form.logoUrl);
                   }

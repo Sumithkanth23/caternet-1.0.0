@@ -17,6 +17,7 @@ export default function PostJob() {
     salaryAmount: '',
     minExperience: '1',
     skills: [],
+    workHoursFrom: '', workHoursTo: '', supervisorName: '',
   });
   const [skillInput, setSkillInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -40,6 +41,8 @@ export default function PostJob() {
     if (!form.jobTitle.trim()) { setError('Job title is required.'); return; }
     if (!form.jobDescription.trim()) { setError('Job description is required.'); return; }
     if (!form.startingDate) { setError('Starting date is required.'); return; }
+    if (!form.workHoursFrom || !form.workHoursTo || form.workHoursTo <= form.workHoursFrom) { setError('Work end time must be after work start time.'); return; }
+    if (!form.supervisorName.trim()) { setError('Supervisor name is required.'); return; }
     if (!profile?._id) { setError('Caterer profile not found. Please create your profile first.'); return; }
 
     setSubmitting(true);
@@ -59,13 +62,14 @@ export default function PostJob() {
           salaryPeriod: form.salaryFrequency,
           minExperience: form.minExperience,
           skills: form.skills,
+          workHoursFrom: form.workHoursFrom, workHoursTo: form.workHoursTo, supervisorName: form.supervisorName.trim(),
         }),
       });
       setSuccess(true);
       setForm({
         jobTitle: '', jobDescription: '', location: 'Chennai', jobType: 'Full Time',
         startingDate: '', endingDate: '', salaryFrequency: 'Per Month',
-        salaryAmount: '', minExperience: '1', skills: [],
+        salaryAmount: '', minExperience: '1', skills: [], workHoursFrom: '', workHoursTo: '', supervisorName: '',
       });
     } catch (err) {
       setError(err?.message || 'Failed to post job. Please try again.');
@@ -104,6 +108,12 @@ export default function PostJob() {
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
           />
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Work Start Time *</label><input type="time" value={form.workHoursFrom} onChange={(e) => setForm((f) => ({ ...f, workHoursFrom: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg" required /></div>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">Work End Time *</label><input type="time" value={form.workHoursTo} onChange={(e) => setForm((f) => ({ ...f, workHoursTo: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-300 rounded-lg" required /></div>
+        </div>
+        <div><label className="block text-sm font-medium text-gray-700 mb-1">Supervisor Name *</label><input type="text" value={form.supervisorName} onChange={(e) => setForm((f) => ({ ...f, supervisorName: e.target.value }))} placeholder="Enter supervisor's full name" className="w-full px-4 py-2.5 border border-gray-300 rounded-lg" required /></div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Job Description *</label>
@@ -249,7 +259,7 @@ export default function PostJob() {
         <div className="flex justify-end gap-3 pt-4">
           <button
             type="button"
-            onClick={() => setForm({ jobTitle: '', jobDescription: '', location: 'Chennai', jobType: 'Full Time', startingDate: '', endingDate: '', salaryFrequency: 'Per Month', salaryAmount: '', minExperience: '1', skills: [] })}
+            onClick={() => setForm({ jobTitle: '', jobDescription: '', location: 'Chennai', jobType: 'Full Time', startingDate: '', endingDate: '', salaryFrequency: 'Per Month', salaryAmount: '', minExperience: '1', skills: [], workHoursFrom: '', workHoursTo: '', supervisorName: '' })}
             disabled={submitting}
             className="px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >

@@ -7,7 +7,9 @@ const {
   getJobRequestsForEmployee,
   updateJobRequestStatus,
   updateJobRequestChecklist,
+  getEmployeeJobHistory,
 } = require("../controllers/jobRequestController");
+const { verifyToken } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -18,6 +20,7 @@ router.post("/", createJobRequest);
 router.get("/caterer/:id", getJobRequestsForCaterer);
 
 // All applications submitted by an employee
+router.get("/employee/history", verifyToken, getEmployeeJobHistory);
 router.get("/employee/:id", getJobRequestsForEmployee);
 
 // Caterer updates status (Pending / Accepted / Declined)

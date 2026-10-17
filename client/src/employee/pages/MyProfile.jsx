@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UtensilsCrossed, Briefcase, MapPin, Calendar, Phone, Pencil } from 'lucide-react';
+import { UtensilsCrossed, Briefcase, MapPin, Calendar, Phone, Pencil, Save, UserRound } from 'lucide-react';
 import { useEmployeeProfile } from '../../context/EmployeeProfileContext';
 import { toAbsoluteUrl } from '../../lib/api';
 import {
@@ -61,14 +61,18 @@ export default function EmployeeMyProfile() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
+    <div className="space-y-6 max-w-5xl">
+      <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4 min-w-0">
+            {form.profileImageUrl ? <img src={toAbsoluteUrl(form.profileImageUrl)} alt={form.fullName || 'Profile'} className="w-16 h-16 rounded-2xl object-cover border border-blue-100" /> : <div className="grid w-16 h-16 shrink-0 place-items-center rounded-2xl bg-blue-100 text-blue-700"><UserRound size={28} /></div>}
+            <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Employee account</p><h1 className="text-2xl font-bold text-gray-800 truncate">{form.fullName || 'My Profile'}</h1><p className="mt-1 flex items-center gap-1 text-sm text-gray-500"><MapPin size={15} /> {form.district || 'Add your district'}</p></div>
+          </div>
         {!editing ? (
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 font-medium"
           >
             <Pencil size={18} />
             Edit Profile
@@ -85,16 +89,19 @@ export default function EmployeeMyProfile() {
             <button
               type="button"
               onClick={handleSave}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 font-medium"
             >
+              <Save size={17} />
               Save
             </button>
           </div>
         )}
-      </div>
+        </div>
+        <p className="mt-5 border-t border-gray-100 pt-4 text-sm text-gray-500">Keep your work preferences current so caterers can find the right fit for their events.</p>
+      </section>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-        <div className="flex items-center gap-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-6">
+        <div className="flex items-center gap-4 border-b border-gray-100 pb-5">
           {form.profileImageUrl ? (
             <img
               src={toAbsoluteUrl(form.profileImageUrl)}

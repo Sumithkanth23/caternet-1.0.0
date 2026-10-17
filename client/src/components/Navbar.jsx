@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, LogOut, X, LayoutDashboard, User } from 'lucide-react';
+import { Search, LogOut, X, LayoutDashboard, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import AccountAvatar from './AccountAvatar';
 
 const DASHBOARD_MAP = {
   user: '/user/dashboard',
@@ -21,7 +22,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [profileOpen, setProfileOpen] = useState(false);
   const inputRef = useRef(null);
+  const profileMenuRef = useRef(null);
 
   useEffect(() => {
     if (searchOpen) setTimeout(() => inputRef.current?.focus(), 50);
@@ -35,6 +38,14 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) setProfileOpen(false);
+    };
+    document.addEventListener('mousedown', closeOnOutsideClick);
+    return () => document.removeEventListener('mousedown', closeOnOutsideClick);
+  }, []);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     const trimmed = query.trim();
@@ -44,7 +55,7 @@ export default function Navbar() {
     navigate(`/search?q=${encodeURIComponent(trimmed)}`);
   };
 
-  const handleLogout = () => { logout(); navigate('/'); };
+  const handleLogout = () => { setProfileOpen(false); logout(); navigate('/'); };
 
   const dashboardPath = user ? (DASHBOARD_MAP[user.role] || '/') : '/';
   const roleColor = user ? (ROLE_COLORS[user.role] || 'bg-gray-100 text-gray-700') : '';
@@ -156,38 +167,21 @@ export default function Navbar() {
                   </Link>
                 </motion.div>
 
-                {/* Welcome + role badge */}
-                <motion.div
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                  className="flex items-center gap-2"
-                >
-                  <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                    <User size={15} className="text-gray-400" />
-                    <span className="font-medium text-gray-800">{user.name || user.email}</span>
-                  </div>
-                  <motion.span
-                    initial={{ scale: 0.7, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 380, damping: 20, delay: 0.1 }}
-                    className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${roleColor}`}
-                  >
-                    {user.role}
-                  </motion.span>
-                </motion.div>
-
-                {/* Logout */}
-                <motion.button
-                  type="button"
-                  onClick={handleLogout}
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.94 }}
-                  className="flex items-center gap-1.5 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-700 font-medium py-2 px-4 rounded-lg transition text-sm border border-transparent hover:border-red-200"
-                >
-                  <LogOut size={16} />
-                  Logout
-                </motion.button>
+                <div ref={profileMenuRef} className="relative">
+                  <button type="button" onClick={() => setProfileOpen((open) => !open)} className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 transition" aria-expanded={profileOpen}>
+                    <AccountAvatar name={user.name || user.email} />
+                    <span className="hidden sm:block text-sm font-medium text-gray-800 max-w-28 truncate">{user.name || user.email}</span>
+                    <ChevronDown size={16} className={`text-gray-500 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {profileOpen && (
+                      <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="absolute right-0 mt-2 w-44 rounded-xl border border-gray-100 bg-white p-1.5 shadow-lg">
+                        <Link to={user.role === 'user' ? '/user/profile' : `/${user.role}/profile`} onClick={() => setProfileOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"><User size={16} /> My Profile</Link>
+                        <button type="button" onClick={handleLogout} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"><LogOut size={16} /> Logout</button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </>
             ) : (
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}>

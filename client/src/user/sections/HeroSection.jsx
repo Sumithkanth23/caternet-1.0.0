@@ -46,10 +46,10 @@ export default function HeroSection({ district, setDistrict, date, setDate }) {
       style={{
         backgroundImage: heroImage
           ? `url(${heroImage})`
-          : 'linear-gradient(135deg, #e0f2fe 0%, #fef3c7 100%)',
+          : 'linear-gradient(135deg, #e8fbfc 0%, #b5ebef 52%, #d8f6f8 100%)',
       }}
     >
-      <div className="absolute inset-0 bg-black/30" aria-hidden />
+      <div className="absolute inset-0 bg-slate-900/35" aria-hidden />
 
       <motion.div
         className="relative z-10 text-center max-w-3xl mx-auto"
@@ -59,14 +59,14 @@ export default function HeroSection({ district, setDistrict, date, setDate }) {
       >
         <motion.h1
           variants={headingVariant}
-          className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 pb-1 border-b-2 border-dashed border-gray-400 inline-block"
+          className="text-4xl md:text-5xl font-bold text-white mb-4 inline-block drop-shadow-sm"
         >
           {heroContent.title}
         </motion.h1>
 
         <motion.p
           variants={subtitleVariant}
-          className="text-lg text-gray-600 mb-8"
+          className="text-lg text-white/90 mb-8"
         >
           {heroContent.subtitle}
         </motion.p>
