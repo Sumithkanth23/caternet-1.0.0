@@ -27,6 +27,13 @@ const jobPostSchema = new mongoose.Schema(
       enum: ["Full Time", "Part Time", "Contract", "One-time"],
       required: true,
     },
+    // How many workers this posting needs filled (e.g. 3 cooks for one
+    // event). Applicants are only auto-waitlisted once every slot is filled.
+    positionsNeeded: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
     startDate: {
       type: Date,
       required: true,

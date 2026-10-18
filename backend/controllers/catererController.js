@@ -489,7 +489,7 @@ async function getCatererEmployeeHistory(req, res, next) {
       status: "Completed",
     })
       .populate("employee", "fullName role district")
-      .populate("job", "title salaryAmount salaryPeriod")
+      .populate("job", "title salaryAmount salaryPeriod workHoursFrom workHoursTo")
       .sort({ completedAt: -1 })
       .lean();
 

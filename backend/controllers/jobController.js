@@ -24,6 +24,7 @@ async function createJob(req, res, next) {
       workHoursFrom,
       workHoursTo,
       supervisorName,
+      positionsNeeded,
     } = req.body;
 
     if (!catererId || !title || !jobType || !startDate) {
@@ -46,6 +47,7 @@ async function createJob(req, res, next) {
       workHoursFrom,
       workHoursTo,
       supervisorName,
+      positionsNeeded: positionsNeeded ? Math.max(1, Number(positionsNeeded)) : 1,
       skills: Array.isArray(skills)
         ? skills
         : typeof skills === "string"
@@ -118,6 +120,7 @@ async function updateJob(req, res, next) {
       "workHoursFrom",
       "workHoursTo",
       "supervisorName",
+      "positionsNeeded",
     ];
     const update = Object.fromEntries(
       allowedFields
@@ -128,6 +131,7 @@ async function updateJob(req, res, next) {
     if (update.startDate !== undefined) update.startDate = new Date(update.startDate);
     if (update.endDate !== undefined) update.endDate = update.endDate ? new Date(update.endDate) : undefined;
     if (update.salaryAmount !== undefined) update.salaryAmount = Number(update.salaryAmount);
+    if (update.positionsNeeded !== undefined) update.positionsNeeded = Math.max(1, Number(update.positionsNeeded) || 1);
     if (update.requiredSkills !== undefined) {
       update.skills = Array.isArray(update.requiredSkills)
         ? update.requiredSkills

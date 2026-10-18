@@ -16,6 +16,7 @@ import {
   ChevronUp,
   Minus,
   Plus,
+  Phone,
 } from 'lucide-react';
 import { apiFetch, toAbsoluteUrl } from '../../lib/api';
 import { useCatererProfile } from '../../context/CatererProfileContext';
@@ -87,6 +88,15 @@ function ApplicantRow({ req, busy, jobFull, onAccept, onDecline, onWaitlist, onN
             {info.district ? ` · ${info.district}` : ''}
             {info.experience ? ` · ${info.experience}` : ''}
           </p>
+          {info.phone && (
+            <a
+              href={`tel:${info.phone}`}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-0.5 inline-flex items-center gap-1 text-xs text-gray-600 hover:text-orange-600"
+            >
+              <Phone size={11} /> {info.phone}
+            </a>
+          )}
           {req.status === 'Waitlisted' && typeof req.waitlistPosition === 'number' && (
             <p className="mt-0.5 text-xs text-blue-600">Backup #{req.waitlistPosition} in line · awaiting their response</p>
           )}

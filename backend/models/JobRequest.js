@@ -49,10 +49,49 @@ const jobRequestSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Accepted", "Declined", "Completed"],
+      enum: [
+        "Pending",
+        "Accepted",
+        "Declined",
+        "Waitlisted", // offered a backup spot after someone else was accepted
+        "WaitlistAccepted", // employee agreed to be an on-call backup
+        "WaitlistDeclined", // employee declined the backup offer
+        "No-Show", // was Accepted, but didn't show up on event day
+        "Completed",
+      ],
       default: "Pending",
     },
     note: {
+      type: String,
+      trim: true,
+    },
+    // --- Waitlist / backup-bench tracking ---
+    waitlistPosition: {
+      // 1 = first backup in line, 2 = second, etc. Assigned when offered.
+      type: Number,
+      default: null,
+    },
+    waitlistOfferedAt: {
+      type: Date,
+      default: null,
+    },
+    waitlistRespondedAt: {
+      type: Date,
+      default: null,
+    },
+    promotedFromWaitlist: {
+      type: Boolean,
+      default: false,
+    },
+    promotedAt: {
+      type: Date,
+      default: null,
+    },
+    noShowAt: {
+      type: Date,
+      default: null,
+    },
+    noShowReason: {
       type: String,
       trim: true,
     },
