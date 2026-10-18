@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  (import.meta.env && import.meta.env.VITE_API_BASE_URL) || 'https://caternet-backend.onrender.com';
+  (import.meta.env && import.meta.env.VITE_API_BASE_URL) || 'http://localhost:5000';
 
 export function toAbsoluteUrl(maybeRelativeUrl) {
   if (!maybeRelativeUrl) return '';

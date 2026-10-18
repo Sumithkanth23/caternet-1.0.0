@@ -66,7 +66,17 @@ export default function EmployeeHeader() {
             <HelpCircle size={18} />
             Help
           </button>
-          <NotificationMenu path={profile?._id ? `/api/job-requests/employee/${profile._id}` : ''} linkTo="/employee/my-requests" title="Application updates" itemLabel={(request) => `${request.job?.title || 'Job application'} is awaiting a response`} />
+          <NotificationMenu
+            path={profile?._id ? `/api/job-requests/employee/${profile._id}` : ''}
+            linkTo="/employee/my-requests"
+            title="Application updates"
+            statuses={['Pending', 'Waitlisted']}
+            itemLabel={(request) =>
+              request.status === 'Waitlisted'
+                ? `Backup offer for ${request.job?.title || 'a job'} — respond now`
+                : `${request.job?.title || 'Job application'} is awaiting a response`
+            }
+          />
           <div ref={profileMenuRef} className="relative">
             <button
               type="button"

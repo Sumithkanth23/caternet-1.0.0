@@ -18,6 +18,7 @@ export default function PostJob() {
     minExperience: '1',
     skills: [],
     workHoursFrom: '', workHoursTo: '', supervisorName: '',
+    positionsNeeded: '1',
   });
   const [skillInput, setSkillInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -63,6 +64,7 @@ export default function PostJob() {
           minExperience: form.minExperience,
           skills: form.skills,
           workHoursFrom: form.workHoursFrom, workHoursTo: form.workHoursTo, supervisorName: form.supervisorName.trim(),
+          positionsNeeded: form.positionsNeeded ? Number(form.positionsNeeded) : 1,
         }),
       });
       setSuccess(true);
@@ -70,6 +72,7 @@ export default function PostJob() {
         jobTitle: '', jobDescription: '', location: 'Chennai', jobType: 'Full Time',
         startingDate: '', endingDate: '', salaryFrequency: 'Per Month',
         salaryAmount: '', minExperience: '1', skills: [], workHoursFrom: '', workHoursTo: '', supervisorName: '',
+        positionsNeeded: '1',
       });
     } catch (err) {
       setError(err?.message || 'Failed to post job. Please try again.');
@@ -124,6 +127,21 @@ export default function PostJob() {
             rows={4}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none resize-none"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Workers Needed *</label>
+          <input
+            type="number"
+            min="1"
+            value={form.positionsNeeded}
+            onChange={(e) => setForm((f) => ({ ...f, positionsNeeded: e.target.value }))}
+            className="w-28 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            How many people you need for this role. Applicants beyond this number are offered a backup/waitlist
+            spot instead of being rejected.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -259,7 +277,7 @@ export default function PostJob() {
         <div className="flex justify-end gap-3 pt-4">
           <button
             type="button"
-            onClick={() => setForm({ jobTitle: '', jobDescription: '', location: 'Chennai', jobType: 'Full Time', startingDate: '', endingDate: '', salaryFrequency: 'Per Month', salaryAmount: '', minExperience: '1', skills: [], workHoursFrom: '', workHoursTo: '', supervisorName: '' })}
+            onClick={() => setForm({ jobTitle: '', jobDescription: '', location: 'Chennai', jobType: 'Full Time', startingDate: '', endingDate: '', salaryFrequency: 'Per Month', salaryAmount: '', minExperience: '1', skills: [], workHoursFrom: '', workHoursTo: '', supervisorName: '', positionsNeeded: '1' })}
             disabled={submitting}
             className="px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
